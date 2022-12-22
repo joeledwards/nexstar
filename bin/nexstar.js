@@ -20,7 +20,7 @@ app(async () => {
 })
 
 async function openSerialPort () {
-  const availablePorts = SerialPort.list()
+  const availablePorts = await SerialPort.list()
   console.info('AvailablePorts')
   availablePorts.forEach(port => console.info(port))
 
@@ -38,7 +38,7 @@ async function openSerialPort () {
   })
 
   return new Promise((resolve, reject) => {
-    port.on('error', e => reject(e))
-    port.on('open', () => resolve(sp))
+    sp.on('error', e => reject(e))
+    sp.on('open', () => resolve(sp))
   })
 }
