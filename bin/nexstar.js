@@ -12,20 +12,29 @@ app(async () => {
   try {
     // https://serialport.io/docs/api-bindings-cpp
     //
-    // sp.read(buffer: Buffer, offset: number, length: number): Promise<{buffer: Buffer, bytesRead: number}>
     // sp.write(buffer: Buffer): Promise<void>
+    // sp.read(buffer: Buffer, offset: number, length: number): Promise<{buffer: Buffer, bytesRead: number}>
+
+    console.info('Requesting info')
+    sp.write(Buffer.from(`Get RA/DEC\r`))
+    await sleep(3500)
+    console.info('Reading info')
+    const b = Buffer.alloc(64)
+    sp.read(b, 10)
+    console.info(b)
   } finally {
+    console.info("Closing serial port.")
     await sp.close()
   }
 })
 
 async function openSerialPort () {
   const availablePorts = await SerialPort.list()
-  console.info('AvailablePorts')
-  availablePorts.forEach(port => console.info(port))
+  //console.info('AvailablePorts')
+  //availablePorts.forEach(port => console.info(port))
 
   const sp = new SerialPort({
-    path: "/dev/ttys0",
+    path: "/dev/ttyUSB0",
     baudRate: 9600,
     dataBits: 8,
     lock: true,
@@ -41,4 +50,8 @@ async function openSerialPort () {
     sp.on('error', e => reject(e))
     sp.on('open', () => resolve(sp))
   })
+}
+
+async function sleep (duration) {
+  return new Promise(resolve => setTimeout(resolve, duration))
 }
